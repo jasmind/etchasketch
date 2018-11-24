@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Etch a sketch</title>
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+  </head>
+  <body>
+    <h1>Etch a sketch</h1>
+    <button id="btnClearGrid">Reset grid</button>
+    <button id="btnSetGridSize">Set grid size</button>
+    <button id="btnSetColorMode">Color mode</button>
+    <p id="gridSize">Grid size: 16 x 16</p>
+    <div id="container">
+    </div>
+    <footer>
+      <label>Made with &hearts; by Hattori</label>
+    </footer>
+  </body>
+  <script type="text/javascript">
+    let gridBlocks = 16;
+    let isColorModeOn = false;
+    const btnClearGrid = document.querySelector("#btnClearGrid");
+    const btnSetGridSize = document.querySelector("#btnSetGridSize");
+    const btnSetColorMode = document.querySelector("#btnSetColorMode");
+
+    btnClearGrid.addEventListener("click", function(e){
+      resetGrid();
+    });
+
+    btnSetGridSize.addEventListener("click", function(e){
+      setGridSize();
+    });
+
+    btnSetColorMode.addEventListener("click", function(e){
+      isColorModeOn = !isColorModeOn;
+      if (isColorModeOn) {
+        btnSetColorMode.style.backgroundColor = "red";
+        btnSetColorMode.style.color = "white";
+      } else {
+        btnSetColorMode.style.backgroundColor = "lightgray";
+        btnSetColorMode.style.color = "black";
+      }
+    });
+
+    function resetGrid() {
+      gridBlocks = 16;
+      drawGrid(16);
+    }
+
+    function setGridSize() {
+      gridBlocks = prompt("Please enter number of grid elements (1-64)!");
+
+      if (gridBlocks == null || gridBlocks === "") {
+       alert("Please enter value!");
+       return;
+      }
+
+      if (!isNumber(gridBlocks)) {
+        alert("Please enter only numbers!");
+        return;
+      }
+
+      if (parseInt(gridBlocks) < 1 || parseInt(gridBlocks) > 64) {
+        alert("Allowed range 1-64!");
+        return;
+      }
+      drawGrid(parseInt(gridBlocks));
+    }
+
+    function isNumber(n) {
+      return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
+    function random_color(){
+      return Math.floor(Math.random()*16777215).toString(16);
+    }
+
+    function drawGrid(numberOfBlocks) {
+      let gridWidthPx = 600;
+      let blockWidthPx = (gridWidthPx / numberOfBlocks);
+
+      const gridSizeParagraph = document.querySelector("#gridSize");
+      gridSizeParagraph.textContent = `Grid size: ${numberOfBlocks} x ${numberOfBlocks}`
+
+      const container = document.querySelector("#container");
+      container.innerHTML = "";
+
+      for (var row = numberOfBlocks; row >= 1; row--) {
+        for (var column = numberOfBlocks; column >= 1; column--) {
+          const div = document.createElement('div');
+          div.setAttribute("id", `row_${row}_col_${column}`);
+          div.setAttribute("style", `width: ${blockWidthPx}px; height: ${blockWidthPx}px;
+                                     border: 1px solid gray; float: left; box-sizing:  border-box;`);
+          div.classList.add("gridBlock");
+
+          div.addEventListener("mouseover", function(e){
+            if (isColorModeOn) {
+               let color = random_color();
+               e.target.style.backgroundColor = `#${color}`;
+            } else {
+              e.target.style.backgroundColor = "black";
+            }
+          });
+          container.appendChild(div);
+        }
+      }
+    }
+
+    window.addEventListener("load", function(e){
+      drawGrid(16);
+    });
+  </script>
+</html>
